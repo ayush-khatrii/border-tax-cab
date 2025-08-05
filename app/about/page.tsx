@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 const About = () => {
+
   return (
     <section className="mt-20 flex items-center justify-center px-4 py-12 bg-background">
       <div className=" w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-10">

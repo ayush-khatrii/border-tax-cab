@@ -15,12 +15,12 @@ const Hero = () => {
           Skip long queues and complete your Border tax in minutes—hassle free and secure.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-          <Button className='w-full' asChild>
+          <Button className='w-full md:w-auto' asChild>
             <Link href="#book">
               Start Payment
             </Link>
           </Button>
-          <Button className='w-full' asChild variant="outline">
+          <Button className='w-full md:w-auto' asChild variant="outline">
             <Link href="/about">
               Know more
             </Link>

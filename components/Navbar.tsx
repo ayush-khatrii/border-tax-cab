@@ -1,93 +1,120 @@
 "use client";
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
+} from "@/components/ui/navigation-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { FaWhatsapp } from 'react-icons/fa';
 
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Navigation links
-  const navLinks = [
-    { title: 'Home', href: '/' },
-    { title: 'About', href: '/about' },
-    { title: 'Insurance', href: '/insurance' },
-    { title: 'Contact', href: '/contact' },
+  const navigationLinks = [
+    { label: 'Home', href: '/', active: true },
+    { label: 'About', href: '/about' },
+    { label: 'Insurance', href: '/insurance' },
+    { label: 'Contact', href: '/contact' },
   ];
 
   return (
-    <nav className="w-full border-b backdrop-blur py-2 px-6">
-      <div className="container mx-auto flex items-center justify-between">
-        <div className="flex items-center">
-          <a href="/" className="text-xl font-extrabold text-primary">Easy Tax</a>
-        </div>
-
-        <div className="hidden md:flex">
-          <NavigationMenu>
-            <NavigationMenuList>
-              {navLinks.map((link) => (
-                <NavigationMenuItem key={link.title}>
-                  <a href={link.href}>
-                    <Button variant="ghost" className="text-foreground/80 cursor-pointer hover:text-primary transition-colors duration-300">
-                      {link.title}
-                    </Button>
-                  </a>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
-
-        <div className="md:hidden">
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-64 pt-12">
-              <div className="flex flex-col space-y-4">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.title}
-                    href={link.href}
-                    className="text-lg font-medium text-gray-700 hover:text-gray-900 px-2 py-2 hover:bg-gray-100 rounded-md"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.title}
-                  </a>
-                ))}
-              </div>
+    <header className="border-b px-4 md:px-6">
+      <div className="flex h-16 items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          {/* Mobile menu trigger */}
+          <Popover>
+            <PopoverTrigger asChild>
               <Button
+                className="group size-8 md:hidden"
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4"
-                onClick={() => setIsMobileMenuOpen(false)}
               >
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close menu</span>
+                <svg
+                  className="pointer-events-none"
+                  width={16}
+                  height={16}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4 12L20 12"
+                    className="origin-center -translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
+                  />
+                  <path
+                    d="M4 12H20"
+                    className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
+                  />
+                  <path
+                    d="M4 12H20"
+                    className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
+                  />
+                </svg>
               </Button>
-            </SheetContent>
-          </Sheet>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-36 p-1 md:hidden">
+              <NavigationMenu className="max-w-none *:w-full">
+                <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
+                  {navigationLinks.map((link, index) => (
+                    <NavigationMenuItem key={index} className="w-full">
+                      <NavigationMenuLink
+                        href={link.href}
+                        className="py-1.5"
+                        active={link.active}
+                      >
+                        {link.label}
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  ))}
+                </NavigationMenuList>
+              </NavigationMenu>
+            </PopoverContent>
+          </Popover>
+          {/* Main nav */}
+          <div className="flex items-center gap-6">
+            <Link href="/" className="text-primary font-bold hover:text-primary/90">
+              EasyTax
+            </Link>
+            {/* Navigation menu */}
+            <NavigationMenu className="max-md:hidden">
+              <NavigationMenuList className="gap-2">
+                {navigationLinks.map((link, index) => (
+                  <NavigationMenuItem key={index}>
+                    <NavigationMenuLink
+                      active={link.active}
+                      href={link.href}
+                      className="text-muted-foreground hover:text-primary py-1.5 font-medium"
+                    >
+                      {link.label}
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+        </div>
+        {/* Right side */}
+        <div className="flex items-center gap-1">
+          <Button asChild className="text-sm">
+            {/* ADD WHATSAPP NUMBER HERE */}
+            <Link href={`https://wa.me/+918200450219?text=Hello, I need assistance with my vehicle border tax.`} target='_blank'>
+              <FaWhatsapp size="2.5rem" />Contact Us
+            </Link>
+          </Button>
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 

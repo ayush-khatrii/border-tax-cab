@@ -9,6 +9,10 @@ type BORDES = {
   [key: string]: string[];
 };
 
+export const taxModes = [
+  { value: "daily", label: "Daily" },
+];
+
 export const states: State[] = [
   { code: 'UP', name: 'Uttar Pradesh', borderTax: 150 },
   { code: 'RJ', name: 'Rajasthan', borderTax: 190 },
@@ -169,7 +173,6 @@ export const borders: BORDES = {
     "Begusarai",
     "Bettiah",
     "Bhagalpur",
-    "Bhojpur",
     "Buxar",
     "Bhojpur",
     "Buxur",
