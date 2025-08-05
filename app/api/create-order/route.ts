@@ -7,15 +7,18 @@ const instance = new Razorpay({
 })
 
 export async function POST(request: NextRequest) {
+  const { amount } = await request.json();
+
   try {
     const order = await instance.orders.create({
-      amount: 100 * 100,
+      amount: Number(amount) * 100, // Converted to paise
       currency: "INR",
       receipt: "receipt_" + Math.random().toString(36).substring(7),
       payment_capture: true
     });
+    console.log('order created:', order);
     return NextResponse.json({
-      orderId: order.id,
+      order,
       status: 200
     });
   } catch (error) {

@@ -1,6 +1,5 @@
 import React from 'react'
 import { Button } from './ui/button'
-import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 const Hero = () => {
@@ -14,7 +13,7 @@ const Hero = () => {
         <p className="text-muted-foreground text-base md:text-lg mb-6">
           Skip long queues and complete your Border tax in minutes—hassle free and secure.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
           <Button className='w-full md:w-auto' asChild>
             <Link href="#book">
               Start Payment

@@ -18,6 +18,9 @@ import { format } from "date-fns";
 import Script from "next/script";
 import { toast } from "sonner";
 import { IoIosArrowRoundForward } from "react-icons/io";
+import { useRouter } from 'next/navigation'
+
+
 declare global {
   interface Window {
     Razorpay: any;
@@ -37,6 +40,8 @@ export default function Book() {
   const [isClosed, setIsClosed] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [taxMode, setTaxMode] = useState("daily");
+
+  const router = useRouter();
 
   const handleStateChange = (code: string) => {
     setState(code);
@@ -61,6 +66,7 @@ export default function Book() {
     setIsClosed(hour >= 0 && hour < 6);
   }, []);
 
+
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!startDate || !endDate || !state || !entryBorder || !seatCapacity || !whatsappNumber) {
@@ -71,17 +77,22 @@ export default function Book() {
     setIsProcessing(true);
 
     try {
-      const res = await fetch("/api/create-order", { method: "POST" });
+      const res = await fetch("/api/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: price }),
+      });
       const data = await res.json();
-
+      console.log("Order data received: ", data);
       const rzp = new window.Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: Number(price) * 100,
         currency: "INR",
         name: "EasyTax",
         description: "Vehicle Border Entry Tax",
-        order_id: data.id,
-        callback_url: `${window.location.origin}/success`,
+        order_id: data.order.id,
         prefill: {
           contact: whatsappNumber,
           name,
@@ -97,10 +108,31 @@ export default function Book() {
         theme: {
           color: "#4CAF50",
         },
-        handler: function (response: any) {
-          const data = response;
-          console.log("Payment data::::", data);
-          toast.success("Payment successful!");
+        handler: async function (response: any) {
+          console.log('handler func. response: ', response.razorpay_order_id);
+          try {
+            const paymentResponse = await fetch("/api/verify-order", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+            const verificationData = await paymentResponse.json();
+
+            if (verificationData.success) {
+              toast.success("Payment successful!");
+              router.push('/success')
+            }
+          } catch (error) {
+            alert("Payment verification failed. Please contact support.");
+            toast.error("Payment verification failed. Please contact support.");
+            console.error(error);
+          }
         },
       });
 
@@ -226,19 +258,19 @@ export default function Book() {
 
         {/* Amount */}
         <div className="my-5">
-          <p className="text-3xl font-bold">
+          <p className="text-3xl mb-2 font-bold">
             Total: <span className="text-green-600 font-bold">₹{price}</span>
           </p>
           {startDate && endDate && state && (
-            <span className="my-3 text-muted-foreground flex items-center gap-3 font-normal text-sm mt-1">
-              ({format(startDate, "d MMM yyyy")} - {format(endDate, "d MMM yyyy")} <IoIosArrowRoundForward /> {calculateDays(startDate, endDate)} day(s) × ₹{states.find(s => s.code === state)?.borderTax || 0}/day)
+            <span className="my-3 w-full text-muted-foreground flex items-center  font-normal text-sm mt-1">
+              {format(startDate, "d MMM yyyy")} - {format(endDate, "d MMM yyyy")} <IoIosArrowRoundForward /> {calculateDays(startDate, endDate)} day(s) × ₹{states.find(s => s.code === state)?.borderTax || 0}/day
             </span>
           )}
         </div>
 
         {/* Button */}
         <div>
-          {isClosed ? (
+          {/* {isClosed ? (
             <Button disabled variant="outline" className="w-full">
               Service unavailable (12AM–6AM)
             </Button>
@@ -246,7 +278,10 @@ export default function Book() {
             <Button type="submit" disabled={isProcessing || Number(price) <= 0} className="w-full">
               {isProcessing ? "Processing..." : "Pay Now"}
             </Button>
-          )}
+          )} */}
+          <Button type="submit" disabled={isProcessing || Number(price) <= 0} className="w-full">
+            {isProcessing ? "Processing..." : "Pay Now"}
+          </Button>
         </div>
       </form>
     </section>

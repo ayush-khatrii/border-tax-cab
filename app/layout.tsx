@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { Clock } from "lucide-react";
 import Footer from "@/components/Footer";
+import { Toaster } from "@/components/ui/sonner"
 
 const sora = Sora({
   variable: "--font-sora",
@@ -28,6 +29,7 @@ export default function RootLayout({
         <main className="">
           {children}
         </main>
+        <Toaster position="top-center" />
         <Footer />
       </body>
     </html>
